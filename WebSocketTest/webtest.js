@@ -73,6 +73,7 @@ io.sockets.on('connection', function (socket) {
          letters.forEach(function(value){
          console.log(value);
          matrix.draw(value);
+         matrix.clear();
          });
          //After displaying all the characters in the array clear the matrix so that the last letter is cleared
          matrix.clear();
