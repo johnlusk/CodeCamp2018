@@ -7,7 +7,7 @@ var app = require('http').createServer(handler)
 
 board = new five.Board();
 
-
+// Function to pause code for x milliseconds
 function sleep(milliseconds) {
   var start = new Date().getTime();
   for (var i = 0; i < 1e7; i++) {
@@ -23,21 +23,8 @@ board.on("ready", function() {
   // init a led on pin 13, strobe every 1000ms
   led = new five.Led(13).strobe(1000);
 
-  // setup a stanard servo, center at start
-  servo = new five.Servo({
-    pin:6,
-    range: [0,180],
-    type: "standard",
-    center:true
-  });
 
-  // poll this sensor every second
-  sensor = new five.Sensor({
-    pin: "A0",
-    freq: 1000
-  });
-
-   matrix = new five.Led.Matrix({
+  matrix = new five.Led.Matrix({
     addresses: [0x70],
     controller: "HT16K33",
     rotation: 3,
@@ -68,20 +55,7 @@ function handler (req, res) {
 io.sockets.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });
  
-  // if board is ready
-  if(board.isReady){
-    // read in sensor data, pass to browser
-    sensor.on("data",function(){
-      socket.emit('sensor', { raw: this.raw });
-    });
-  }
-
-  // if servo message received
-  socket.on('servo', function (data) {
-    console.log(data);
-    if(board.isReady){ servo.to(data.pos);  }
-  });
-  // if led message received
+ // if led message received
   socket.on('led', function (data) {
     console.log(data);
      if(board.isReady){    led.strobe(data.delay); } 
@@ -93,11 +67,14 @@ io.sockets.on('connection', function (socket) {
      if(board.isReady){ 
 
          var str = data.matrixText;
+         //Split the data from the text box into an array
          var letters = str.split("");
+         // For each entry in the array write it to the console and write it to the matrix display
          letters.forEach(function(value){
          console.log(value);
          matrix.draw(value);
          });
+         //After displaying all the characters in the array clear the matrix so that the last letter is cleared
          matrix.clear();
     } 
   });

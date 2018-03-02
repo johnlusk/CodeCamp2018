@@ -50,26 +50,14 @@
         console.log(data);
       });
 
-      socket.on('sensor', function (data) {
-        console.log("Incoming sensor data:",data.raw);
-        $("#inData").append(data.raw+"\r");
-        $("#inData").animate({scrollTop:$("#inData")[0].scrollHeight - $("#inData").height()},200);
-
-      });
-
-      $('.servobtn').button();
-
-      $('.servobtn').on('change',function(){
-          console.log("Setting Servo Pos:",$('input[name=servo]:checked').val())
-          socket.emit('servo',{pos:$('input[name=servo]:checked').val()});
-      });
-
+      // When the button is clicked under LED Pulse Delay read the value in the blank and pass it via a websocket to the running node process under the led variable.
       $('#ledSet').on('click',function(){
         var tmp = parseInt($('#ledDelay').val(),10);
         console.log("Setting LED Delay:",tmp)
         socket.emit('led',{delay:tmp});
       });
 
+      // When the button is clicked  under LED Matrix Display read the value in the text box and pass it via a websocket to the running node process under the matrix variable.
       $('#matrixSet').on('click',function(){
         var tmptext = $('#matrixText').val();
         console.log("Setting matrix text:",tmptext)
