@@ -7,6 +7,16 @@ var app = require('http').createServer(handler)
 
 board = new five.Board();
 
+
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+}
+
 // on board ready
 board.on("ready", function() {
 
@@ -25,6 +35,12 @@ board.on("ready", function() {
   sensor = new five.Sensor({
     pin: "A0",
     freq: 1000
+  });
+
+   matrix = new five.Led.Matrix({
+    addresses: [0x70],
+    controller: "HT16K33",
+    rotation: 3,
   });
 
 });
@@ -69,6 +85,21 @@ io.sockets.on('connection', function (socket) {
   socket.on('led', function (data) {
     console.log(data);
      if(board.isReady){    led.strobe(data.delay); } 
+  });
+
+   // if led message received
+  socket.on('matrix', function (data) {
+    console.log(data);
+     if(board.isReady){ 
+
+         var str = data.matrixText;
+         var letters = str.split("");
+         letters.forEach(function(value){
+         console.log(value);
+         matrix.draw(value);
+         });
+         matrix.clear();
+    } 
   });
 
 });
